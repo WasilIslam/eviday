@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EviDay - Daily Tracker & Diary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  </head>
+  <body class="bg-gray-50">
+    <div class="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8"><i class="fas fa-book-open text-emerald-600"></i> EviDay</h1>
+
+        <!-- Columns Editor -->
+        <div class="bg-gray-50 rounded-lg p-6 mb-8">
+          <h3 class="text-xl font-semibold text-gray-700 mb-4"><i class="fas fa-tasks text-emerald-600"></i> Manage Daily Tasks</h3>
+          <div class="flex gap-2 mb-4">
+            <input
+              type="text"
+              id="columnInput"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              placeholder="Add new daily task..."
+            />
+            <button onclick="addColumn()" class="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition-colors"><i class="fas fa-plus mr-2"></i>Add</button>
+          </div>
+          <div class="columns-list flex flex-wrap gap-2" id="columnsList"></div>
+        </div>
+
+        <!-- New Entry Form -->
+        <div class="bg-white rounded-lg border border-gray-200 p-6 mb-8">
+          <div class="mb-4">
+            <input type="date" id="entryDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
+          </div>
+          <div class="daily-checkboxes grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4" id="dailyCheckboxes"></div>
+          <textarea
+            id="diaryEntry"
+            class="w-full h-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 mb-4"
+            placeholder="Write your thoughts here..."
+          ></textarea>
+          <button onclick="saveEntry()" class="w-full bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition-colors"><i class="fas fa-save mr-2"></i>Save Entry</button>
+        </div>
+
+        <div class="flex flex-col gap-4 items-center mt-4">
+          <div class="w-full">
+            <input
+              type="text"
+              id="searchInput"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              placeholder="Search entries..."
+            />
+          </div>
+        </div>
+
+        <!-- Add sort filter before the entries div -->
+        <div class="flex justify-end mb-4">
+          <select id="sortFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="completion-high">Highest Completion</option>
+            <option value="completion-low">Lowest Completion</option>
+          </select>
+        </div>
+
+        <div id="entries">
+          <!-- Diary entries will be displayed here -->
+        </div>
+        <button id="loadMoreBtn" onclick="loadMoreEntries()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors hidden">
+          <i class="fas fa-plus mr-2"></i>Load More
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // Initialize localStorage structure
+      if (!localStorage.getItem("columns")) {
+        localStorage.setItem("columns", JSON.stringify([]));
+      }
+      if (!localStorage.getItem("entries")) {
+        localStorage.setItem("entries", JSON.stringify({}));
+      }
+
+      // Set max date to today
+      document.getElementById("entryDate").max = new Date().toISOString().split("T")[0];
+      document.getElementById("entryDate").value = new Date().toISOString().split("T")[0];
+
+      // Load and display columns
+      function loadColumns() {
+        const columns = JSON.parse(localStorage.getItem("columns"));
+        const columnsList = document.getElementById("columnsList");
+        const checkboxesDiv = document.getElementById("dailyCheckboxes");
+
+        columnsList.innerHTML = "";
+        checkboxesDiv.innerHTML = "";
+
+        columns.forEach((column, index) => {
+          // Add to columns list
+          const columnItem = document.createElement("div");
+          columnItem.className = "bg-white px-3 py-2 rounded-lg shadow-sm flex items-center gap-2 border border-gray-200";
+          columnItem.innerHTML = `
+                    <span class="text-gray-700">${column}</span>
+                    <button onclick="removeColumn(${index})" 
+                        class="text-red-500 hover:text-red-700 transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+          columnsList.appendChild(columnItem);
+
+          // Add to daily checkboxes
+          const checkboxItem = document.createElement("div");
+          checkboxItem.className = "flex items-center gap-3";
+          checkboxItem.innerHTML = `
+                    <input type="checkbox" id="check_${index}" 
+                        class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500">
+                    <label for="check_${index}" class="text-gray-700">${column}</label>
+                `;
+          checkboxesDiv.appendChild(checkboxItem);
+        });
+      }
+
+      function addColumn() {
+        const input = document.getElementById("columnInput");
+        const column = input.value.trim();
+
+        if (column) {
+          const columns = JSON.parse(localStorage.getItem("columns"));
+          columns.push(column);
+          localStorage.setItem("columns", JSON.stringify(columns));
+          input.value = "";
+          loadColumns();
+        }
+      }
+
+      function removeColumn(index) {
+        if (window.confirm("Are you sure you want to delete this task? This will affect all diary entries.")) {
+          const columns = JSON.parse(localStorage.getItem("columns"));
+          columns.splice(index, 1);
+          localStorage.setItem("columns", JSON.stringify(columns));
+          loadColumns();
+          loadEntries(); // Reload entries to update task lists
+        }
+      }
+
+      // Add this function to check if date is within allowed range (today and 2 days back)
+      function isDateAllowed(dateStr) {
+        const selectedDate = new Date(dateStr);
+        selectedDate.setHours(0, 0, 0, 0);  // Reset time part
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);  // Reset time part
+        
+        const twoDaysAgo = new Date(today);
+        twoDaysAgo.setDate(today.getDate() - 2);
+        
+        return selectedDate >= twoDaysAgo && selectedDate <= today;
+      }
+
+      function saveEntry() {
+        const date = document.getElementById("entryDate").value;
+        const entry = document.getElementById("diaryEntry").value;
+        
+        // Add date validation
+        if (!isDateAllowed(date)) {
+          alert("You can only add or edit entries for today and up to 2 days back.");
+          return;
+        }
+        
+        if (!date || !entry.trim()) return;
+
+        const columns = JSON.parse(localStorage.getItem("columns"));
+        const completedTasks = [];
+
+        columns.forEach((_, index) => {
+          if (document.getElementById(`check_${index}`).checked) {
+            completedTasks.push(index);
+          }
+        });
+
+        const entries = JSON.parse(localStorage.getItem("entries"));
+        entries[date] = {
+          text: entry,
+          completedTasks: completedTasks,
+          timestamp: new Date().toISOString(),
+        };
+
+        localStorage.setItem("entries", JSON.stringify(entries));
+
+        document.getElementById("diaryEntry").value = "";
+        columns.forEach((_, index) => {
+          document.getElementById(`check_${index}`).checked = false;
+        });
+
+        filterEntries();  // Add this line to reload entries
+        loadEntryForDate(date);  // Reload the current entry
+      }
+
+      function loadEntryForDate(date) {
+        const entries = JSON.parse(localStorage.getItem("entries"));
+        const entry = entries[date];
+
+        if (entry) {
+          document.getElementById("diaryEntry").value = entry.text;
+
+          // Reset all checkboxes first
+          const columns = JSON.parse(localStorage.getItem("columns"));
+          columns.forEach((_, index) => {
+            document.getElementById(`check_${index}`).checked = false;
+          });
+
+          // Check the completed tasks
+          entry.completedTasks.forEach((index) => {
+            const checkbox = document.getElementById(`check_${index}`);
+            if (checkbox) checkbox.checked = true;
+          });
+
+          // Only show update button if date is within editable range
+          const saveButton = document.querySelector('button[onclick="saveEntry()"]');
+          if (isDateAllowed(date)) {
+            saveButton.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Update Entry';
+            saveButton.classList.remove("bg-emerald-600", "hover:bg-emerald-700");
+            saveButton.classList.add("bg-blue-600", "hover:bg-blue-700");
+            saveButton.disabled = false;
+          } else {
+            saveButton.innerHTML = '<i class="fas fa-lock mr-2"></i>View Only';
+            saveButton.classList.remove("bg-emerald-600", "hover:bg-emerald-700", "bg-blue-600", "hover:bg-blue-700");
+            saveButton.classList.add("bg-gray-400");
+            saveButton.disabled = true;
+          }
+        } else {
+          // Reset form for new entry
+          document.getElementById("diaryEntry").value = "";
+          const columns = JSON.parse(localStorage.getItem("columns"));
+          columns.forEach((_, index) => {
+            document.getElementById(`check_${index}`).checked = false;
+          });
+
+          // Reset save button
+          const saveButton = document.querySelector('button[onclick="saveEntry()"]');
+          if (isDateAllowed(date)) {
+            saveButton.innerHTML = '<i class="fas fa-save mr-2"></i>Save Entry';
+            saveButton.classList.remove("bg-blue-600", "hover:bg-blue-700", "bg-gray-400");
+            saveButton.classList.add("bg-emerald-600", "hover:bg-emerald-700");
+            saveButton.disabled = false;
+          } else {
+            saveButton.innerHTML = '<i class="fas fa-lock mr-2"></i>View Only';
+            saveButton.classList.remove("bg-emerald-600", "hover:bg-emerald-700", "bg-blue-600", "hover:bg-blue-700");
+            saveButton.classList.add("bg-gray-400");
+            saveButton.disabled = true;
+          }
+        }
+      }
+
+      // Update the date input event listener to validate dates
+      document.getElementById("entryDate").addEventListener("change", function (e) {
+        const selectedDate = e.target.value;
+        
+        if (!isDateAllowed(selectedDate)) {
+          alert("You can only view and edit entries for today and up to 2 days back.");
+          e.target.value = new Date().toISOString().split("T")[0];
+          loadEntryForDate(e.target.value);
+          return;
+        }
+        
+        loadEntryForDate(selectedDate);
+      });
+
+      // Add these variables at the top of the script section
+      let currentPage = 1;
+      const entriesPerPage = 5;
+      let filteredEntries = [];
+
+      // Replace the loadEntries function with these new functions
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+      }
+
+      function filterEntries(searchTerm = "") {
+        const entries = JSON.parse(localStorage.getItem("entries"));
+        const searchLower = searchTerm.toLowerCase();
+        const sortType = document.getElementById("sortFilter").value;
+
+        filteredEntries = Object.entries(entries).filter(([date, entry]) => {
+          return entry.text.toLowerCase().includes(searchLower) || formatDate(date).toLowerCase().includes(searchLower);
+        });
+
+        // Sort entries based on selected filter
+        filteredEntries.sort((a, b) => {
+          const columnsLength = JSON.parse(localStorage.getItem("columns")).length;
+          const completionA = columnsLength > 0 ? a[1].completedTasks.length / columnsLength : 0;
+          const completionB = columnsLength > 0 ? b[1].completedTasks.length / columnsLength : 0;
+
+          switch (sortType) {
+            case "newest":
+              return new Date(b[0]) - new Date(a[0]);
+            case "oldest":
+              return new Date(a[0]) - new Date(b[0]);
+            case "completion-high":
+              return completionB - completionA;
+            case "completion-low":
+              return completionA - completionB;
+            default:
+              return new Date(b[0]) - new Date(a[0]);
+          }
+        });
+
+        currentPage = 1;
+        displayEntries();
+      }
+
+      function displayEntries() {
+        const columns = JSON.parse(localStorage.getItem("columns"));
+        const entriesDiv = document.getElementById("entries");
+        const loadMoreBtn = document.getElementById("loadMoreBtn");
+
+        if (currentPage === 1) {
+          entriesDiv.innerHTML = "";
+        }
+
+        const startIndex = 0;
+        const endIndex = currentPage * entriesPerPage;
+        const entriesToShow = filteredEntries.slice(startIndex, endIndex);
+
+        entriesToShow.forEach(([date, entry]) => {
+          const entryDiv = document.createElement("div");
+          entryDiv.className = "bg-white rounded-lg border border-gray-200 p-6 mb-4 shadow-sm";
+
+          const completedTasksText = entry.completedTasks.map((index) => columns[index]).join(", ");
+
+          const completionPercentage = columns.length > 0 ? Math.round((entry.completedTasks.length / columns.length) * 100) : 0;
+
+          entryDiv.innerHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="text-gray-600">
+                            <i class="far fa-calendar mr-2"></i>${formatDate(date)}
+                        </div>
+                        <div class="text-sm font-medium ${completionPercentage >= 70 ? "text-emerald-600" : completionPercentage >= 30 ? "text-yellow-600" : "text-red-600"}">
+                            <i class="fas fa-chart-pie mr-2"></i>${completionPercentage}% Complete
+                        </div>
+                    </div>
+                    <div class="text-gray-800 whitespace-pre-wrap mb-4">${entry.text}</div>
+                    ${
+                      completedTasksText
+                        ? `
+                        <div class="text-gray-600 text-sm">
+                            <i class="fas fa-check-circle text-emerald-600 mr-2"></i>
+                            Completed: ${completedTasksText}
+                        </div>
+                    `
+                        : ""
+                    }
+                `;
+
+          entriesDiv.appendChild(entryDiv);
+        });
+
+        // Show/hide load more button
+        loadMoreBtn.classList.toggle("hidden", endIndex >= filteredEntries.length);
+      }
+
+      function loadMoreEntries() {
+        currentPage++;
+        displayEntries();
+      }
+
+      // Add search input listener
+      document.getElementById("searchInput").addEventListener("input", function (e) {
+        filterEntries(e.target.value.trim());
+      });
+
+      // Add sort filter change listener
+      document.getElementById("sortFilter").addEventListener("change", function () {
+        filterEntries(document.getElementById("searchInput").value.trim());
+      });
+
+      // Update the initial load to use the new functions
+      loadColumns();
+      filterEntries();
+      loadEntryForDate(document.getElementById("entryDate").value);
+    </script>
+  </body>
+</html>
