@@ -7,196 +7,184 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
     <!-- Add Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
     <style>
       :root {
-        --bg: #0f1419;
-        --primary: #5CEFB8;      /* Bright mint */
-        --secondary: #FF3864;    /* Bright pink-red */
-        --text: #E2E8F0;        /* Light gray for better readability */
-        --grid: rgba(255, 255, 255, 0.07);
-        --panel: rgba(16, 23, 30, 0.95);   /* Darker, more solid panels */
-        --panel-border: rgba(92, 239, 184, 0.3);  /* Subtle glow effect */
-        --input-bg: #1A2027;    /* Slightly lighter than bg for inputs */
+        --black: #111111;
+        --white: #ffffff;
+        --accent: #FF3D00;
+        --gray: #f4f4f4;
+        --shadow: 6px 6px 0 var(--black);
       }
 
       body {
-        background: var(--bg);
-        background-image: 
-          linear-gradient(var(--grid) 1px, transparent 1px),
-          linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-        background-size: 30px 30px;
-        color: var(--text);
-        font-family: 'Space Mono', monospace;
+        background: var(--gray);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       }
 
-      .retro-title {
-        font-family: 'VT323', monospace;
-        font-size: 4rem;
-        color: var(--primary);
-        text-shadow: 
-          2px 2px 0 var(--secondary),
-          4px 4px 0 rgba(255, 56, 100, 0.3);
+      .neo-title {
+        font-family: 'Permanent Marker', cursive;
+        font-size: 3.5rem;
         letter-spacing: 2px;
+        padding: 1rem;
+        background: var(--black);
+        color: var(--white);
+        display: inline-block;
         margin-bottom: 2rem;
       }
 
-      .retro-tab {
-        background: var(--input-bg);
-        border: 2px solid var(--primary);
-        color: var(--primary);
-        padding: 0.75rem 1.5rem;
-        font-family: 'VT323', monospace;
-        font-size: 1.25rem;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .retro-tab.active {
-        background: var(--primary);
-        color: var(--bg);
-        font-weight: bold;
-      }
-
-      .retro-panel {
-        background: var(--panel);
-        border: 2px solid var(--panel-border);
-        padding: 2rem;
-        box-shadow: 0 0 20px rgba(92, 239, 184, 0.1);
-      }
-
-      .retro-input {
-        background: var(--input-bg);
-        border: 2px solid var(--panel-border);
-        color: var(--text);
+      .neo-tab {
+        background: var(--white);
+        border: 3px solid var(--black);
         padding: 1rem;
-        font-family: 'Space Mono', monospace;
+        font-weight: 700;
+        font-size: 1rem;
+        text-transform: uppercase;
+        cursor: pointer;
+        min-width: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .neo-tab.active {
+        background: var(--accent);
+        color: var(--white);
+        box-shadow: var(--shadow);
+      }
+
+      .neo-panel {
+        background: var(--white);
+        border: 3px solid var(--black);
+        padding: 2rem;
+        margin-top: 2rem;
+        box-shadow: var(--shadow);
+      }
+
+      .neo-input {
         width: 100%;
+        padding: 1rem;
+        border: 3px solid var(--black);
+        font-size: 1rem;
+        background: var(--white);
         margin-bottom: 1rem;
       }
 
-      .retro-input:focus {
+      .neo-input:focus {
         outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 10px rgba(92, 239, 184, 0.2);
+        border-color: var(--accent);
       }
 
-      .retro-button {
-        background: var(--primary);
-        color: var(--bg);
-        border: none;
+      .neo-button {
+        background: var(--black);
+        color: var(--white);
+        border: 3px solid var(--black);
         padding: 1rem 2rem;
-        font-family: 'VT323', monospace;
-        font-size: 1.25rem;
+        font-weight: 700;
         cursor: pointer;
-        font-weight: bold;
       }
 
-      .retro-button:hover {
-        background: var(--secondary);
+      .neo-button:hover {
+        background: var(--accent);
       }
 
-      .retro-card {
-        background: var(--panel);
-        border: 2px solid var(--panel-border);
+      .neo-card {
+        background: var(--white);
+        border: 3px solid var(--black);
         padding: 1.5rem;
         margin-bottom: 1rem;
       }
 
-      .retro-checkbox {
+      .neo-card-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 3px solid var(--black);
+      }
+
+      .neo-checkbox {
         appearance: none;
-        -webkit-appearance: none;
         width: 24px;
         height: 24px;
-        border: 2px solid var(--primary);
-        background: var(--input-bg);
-        position: relative;
+        border: 3px solid var(--black);
+        background: var(--white);
         cursor: pointer;
-        vertical-align: middle;
-        margin-right: 8px;
       }
 
-      .retro-checkbox:checked {
-        background: var(--primary);
+      .neo-checkbox:checked {
+        background: var(--accent);
+        position: relative;
       }
 
-      .retro-checkbox:checked::after {
+      .neo-checkbox:checked::after {
         content: '✓';
-        color: var(--bg);
+        color: var(--white);
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        font-size: 16px;
-        font-weight: bold;
-      }
-
-      .checkbox-label {
-        display: flex;
-        align-items: center;
-        color: var(--text);
-        font-size: 1rem;
-        margin-bottom: 0.5rem;
-      }
-
-      .daily-checkboxes {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-      }
-
-      #diaryEntry {
-        font-family: 'Space Mono', monospace;
-        font-size: 1rem;
-        line-height: 1.6;
-        background: var(--input-bg);
-        color: var(--text);
       }
 
       .completion-bar {
         width: 100%;
-        height: 8px;
-        background: var(--input-bg);
-        border: 2px solid var(--panel-border);
+        height: 12px;
+        background: var(--gray);
+        border: 3px solid var(--black);
       }
 
       .completion-fill {
         height: 100%;
-        background: var(--primary);
+        background: var(--accent);
       }
 
       #loadingOverlay {
-        background: rgba(15, 20, 25, 0.95);
+        background: rgba(17, 17, 17, 0.9);
       }
 
       .loading-box {
-        width: 40px;
-        height: 40px;
-        border: 2px solid var(--primary);
-        border-right-color: var(--secondary);
-        animation: spin 1s linear infinite;
+        width: 50px;
+        height: 50px;
+        background: var(--accent);
+        border: 3px solid var(--black);
       }
 
-      @keyframes spin {
-        to { transform: rotate(360deg); }
+      select.neo-input {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z' fill='black'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
       }
 
+      /* Add handwriting style to diary entries */
+      #diaryEntry {
+        font-family: 'Caveat', cursive;
+        font-size: 1.5rem;
+        line-height: 1.6;
+      }
+
+      /* Style the diary entries in the entries list */
+      .neo-card .text-gray-800 {
+        font-family: 'Caveat', cursive;
+        font-size: 1.5rem;
+        line-height: 1.6;
+      }
+
+      /* Add responsive text for mobile */
       @media (max-width: 640px) {
-        .retro-tab {
-          padding: 0.5rem;
-          font-size: 1rem;
+        .neo-tab {
+          padding: 0.75rem;
         }
         
+        /* Smaller settings icon on mobile */
         #manageTab {
           padding: 0.5rem;
           min-width: 36px;
           font-size: 0.875rem;
         }
         
-        .retro-title {
-          font-size: 2.5rem;
+        #manageTab i {
+          font-size: 1rem;
         }
       }
     </style>
@@ -208,50 +196,50 @@
 
     <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
       <!-- Settings/Manage Button -->
-      <button class="retro-tab absolute top-4 right-4" onclick="switchTab('manage')" id="manageTab">
+      <button class="neo-tab absolute top-4 right-4" onclick="switchTab('manage')" id="manageTab">
         <i class="fas fa-cog fa-lg"></i>
       </button>
 
-      <h1 class="retro-title text-center">
+      <h1 class="neo-title text-center">
         <i class="fas fa-book-open"></i> EviDay
       </h1>
 
       <!-- Main Tabs -->
       <div class="flex justify-center gap-4 mb-6">
-        <button class="retro-tab active flex items-center gap-2" onclick="switchTab('write')" id="writeTab">
+        <button class="neo-tab active flex items-center gap-2" onclick="switchTab('write')" id="writeTab">
           <i class="fas fa-pen fa-lg"></i>
           <span class="hidden sm:inline">Write</span>
         </button>
-        <button class="retro-tab flex items-center gap-2" onclick="switchTab('entries')" id="entriesTab">
+        <button class="neo-tab flex items-center gap-2" onclick="switchTab('entries')" id="entriesTab">
           <i class="fas fa-book fa-lg"></i>
           <span class="hidden sm:inline">Entries</span>
         </button>
       </div>
 
       <!-- Write Tab -->
-      <div id="writePanel" class="retro-panel">
-        <input type="date" id="entryDate" class="retro-input" />
+      <div id="writePanel" class="neo-panel">
+        <input type="date" id="entryDate" class="neo-input" />
         <div class="daily-checkboxes grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4" id="dailyCheckboxes"></div>
         <textarea
           id="diaryEntry"
-          class="retro-input h-48"
+          class="neo-input h-48"
           placeholder="Write your thoughts here..."
         ></textarea>
-        <button onclick="saveEntry()" class="retro-button w-full">
+        <button onclick="saveEntry()" class="neo-button w-full">
           <i class="fas fa-save mr-2"></i>Save Entry
         </button>
       </div>
 
       <!-- Manage Tasks Tab -->
-      <div id="managePanel" class="retro-panel" style="display: none;">
+      <div id="managePanel" class="neo-panel" style="display: none;">
         <div class="flex gap-2 mb-4">
           <input
             type="text"
             id="columnInput"
-            class="retro-input mb-0"
+            class="neo-input mb-0"
             placeholder="Add new daily task..."
           />
-          <button onclick="addColumn()" class="retro-button whitespace-nowrap">
+          <button onclick="addColumn()" class="neo-button whitespace-nowrap">
             <i class="fas fa-plus mr-2"></i>Add
           </button>
         </div>
@@ -259,15 +247,15 @@
       </div>
 
       <!-- Entries Tab -->
-      <div id="entriesPanel" class="retro-panel" style="display: none;">
+      <div id="entriesPanel" class="neo-panel" style="display: none;">
         <div class="flex gap-4 mb-4">
           <input
             type="text"
             id="searchInput"
-            class="retro-input mb-0"
+            class="neo-input mb-0"
             placeholder="Search entries..."
           />
-          <select id="sortFilter" class="retro-input mb-0 w-48">
+          <select id="sortFilter" class="neo-input mb-0 w-48">
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
             <option value="completion-high">Highest Completion</option>
@@ -275,7 +263,7 @@
           </select>
         </div>
         <div id="entries"></div>
-        <button id="loadMoreBtn" onclick="loadMoreEntries()" class="retro-button w-full mt-4" style="display: none;">
+        <button id="loadMoreBtn" onclick="loadMoreEntries()" class="neo-button w-full mt-4" style="display: none;">
           <i class="fas fa-plus mr-2"></i>Load More
         </button>
       </div>
@@ -359,7 +347,7 @@
         columns.forEach((column, index) => {
           // Add to columns list
           const columnItem = document.createElement("div");
-          columnItem.className = "retro-card flex items-center gap-2";
+          columnItem.className = "neo-card flex items-center gap-2";
           columnItem.innerHTML = `
             <span class="text-gray-700">${column}</span>
             <button onclick="removeColumn(${index})" 
@@ -370,11 +358,12 @@
           columnsList.appendChild(columnItem);
 
           // Add to daily checkboxes
-          const checkboxItem = document.createElement("label");
-          checkboxItem.className = "checkbox-label";
+          const checkboxItem = document.createElement("div");
+          checkboxItem.className = "flex items-center gap-3";
           checkboxItem.innerHTML = `
-            <input type="checkbox" class="retro-checkbox" id="check_${index}">
-            <span>${column}</span>
+            <input type="checkbox" id="check_${index}" 
+                class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500">
+            <label for="check_${index}" class="text-gray-700">${column}</label>
           `;
           checkboxesDiv.appendChild(checkboxItem);
         });
@@ -588,7 +577,7 @@
 
         entriesToShow.forEach(([date, entry]) => {
           const entryDiv = document.createElement("div");
-          entryDiv.className = "retro-card";
+          entryDiv.className = "neo-card";
 
           const completedTasksText = entry.completedTasks.map((index) => columns[index]).join(", ");
 
@@ -603,7 +592,7 @@
                 <i class="fas fa-chart-pie mr-2"></i>${completionPercentage}% Complete
               </div>
             </div>
-            <div class="text-green whitespace-pre-wrap mb-4">${entry.text}</div>
+            <div class="text-gray-800 whitespace-pre-wrap mb-4">${entry.text}</div>
             ${
               completedTasksText
                 ? `
